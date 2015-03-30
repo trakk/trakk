@@ -1,10 +1,10 @@
-todo
-====
+# todo
 
 Simple DB-backed command line todo-list with recurring tasks, sub-task checklists, and stats.
 
-copying
-=======
+
+# license
+
 Copyright (C) 2014  David Ulrich
 
 This program is free software: you can redistribute it and/or modify
