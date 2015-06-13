@@ -1,11 +1,16 @@
 # todo
 
-Simple DB-backed command line todo-list with recurring tasks, sub-task checklists, and stats.
+Simple cli tasklist with recurrence, checklists, and stats.
+
+
+# dependencies
+
+`sudo apt-get install python-psycopg2 python-yaml`
 
 
 # license
 
-Copyright (C) 2014  David Ulrich
+Copyright (C) 2014 - 2015  David Ulrich
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
