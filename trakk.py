@@ -1,4 +1,4 @@
-# todo: simple cli tasklist with recurrence, checklists, and stats
+# trakk: simple cli tasklist with recurrence, checklists, and stats
 # Copyright (C) 2014 - 2015  David Ulrich
 #
 # This program is free software: you can redistribute it and/or modify
@@ -17,25 +17,31 @@
 import json
 import psycopg2
 import yaml
+import sys
 
 
-
-def shutdown():
-	if
+state = {
+	"connected": True
+}
+def shutdown(code=0):
+	if state["connected"]:
+		cur.close()
+		conn.close()
+	sys.exit(code)
 
 try:
 	config = yaml.load(file("config.yaml","r"))
 except yaml.YAMLError, e:
 	print "config.yaml error:", e
-	shutdown()
+	shutdown(1)
 
 
 try:
 	conn = psycopg2.connect("dbname=todo user=todo password=34dS&9ttttt port=5433")
-	
+	state["connected"] = True
 except psycopg2.Error, e:
 	print "Connection error:", e
-	shutdown()
+	shutdown(2)
 
 print config
 
@@ -49,5 +55,4 @@ cur.execute("SELECT * FROM items")
 
 print cur.fetchone()
 
-cur.close()
-conn.close()
+shutdown()
