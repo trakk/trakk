@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import json
 import psycopg2
 import yaml
 import sys
@@ -37,7 +36,11 @@ except yaml.YAMLError, e:
 
 
 try:
-	conn = psycopg2.connect("dbname=todo user=todo password=34dS&9ttttt port=5433")
+	conn = psycopg2.connect("dbname=%s user=%s password=%s port=%s" % (
+		config["dbname"],
+		config["user"],
+		config["password"],
+		config["port"]))
 	state["connected"] = True
 except psycopg2.Error, e:
 	print "Connection error:", e
