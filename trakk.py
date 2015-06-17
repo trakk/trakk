@@ -50,11 +50,10 @@ print config
 
 cur = conn.cursor()
 
-#cur.execute("CREATE TABLE IF NOT EXISTS items (ItemID SERIAL PRIMARY KEY,Description VARCHAR)")
-#cur.execute("INSERT INTO items (Description) VALUES (%s)",("learn python",))
-conn.commit()
+#cur.execute("INSERT INTO tasks (TaskTitle) VALUES (%s)",("learn python",))
+#conn.commit()
 
-cur.execute("SELECT * FROM items")
+cur.execute("SELECT * FROM tasks")
 
 print cur.fetchone()
 
