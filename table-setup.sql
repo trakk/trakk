@@ -19,5 +19,13 @@
 -- individual todo tasks
 CREATE TABLE IF NOT EXISTS tasks (
 	TaskID SERIAL PRIMARY KEY,
-	TaskTitle VARCHAR NOT NULL DEFAULT ''
+	TaskTitle VARCHAR NOT NULL DEFAULT '',
+	TaskDescription VARCHAR NOT NULL DEFAULT ''
+);
+
+-- checklist items within a task
+CREATE TABLE IF NOT EXISTS subtasks (
+	SubtaskID SERIAL PRIMARY KEY,
+	TaskID INT,
+	SubtaskDescription VARCHAR NOT NULL DEFAULT ''
 );
