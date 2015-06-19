@@ -50,11 +50,18 @@ print config
 
 cur = conn.cursor()
 
-#cur.execute("INSERT INTO tasks (TaskTitle) VALUES (%s)",("learn python",))
-#conn.commit()
 
-cur.execute("SELECT * FROM tasks")
-
-print cur.fetchone()
+while True:
+	action = raw_input("what now? [p=print,n=new,x=exit] ")
+	
+	if action == "n":
+		task = raw_input("task: ")
+		cur.execute("INSERT INTO tasks (TaskTitle) VALUES (%s)",(task,))
+		conn.commit()
+	elif action == "p":
+		cur.execute("SELECT * FROM tasks")
+		print cur.fetchall()
+	elif action == "x":
+		break
 
 shutdown()

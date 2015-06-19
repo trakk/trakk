@@ -20,12 +20,14 @@
 CREATE TABLE IF NOT EXISTS tasks (
 	TaskID SERIAL PRIMARY KEY,
 	TaskTitle VARCHAR NOT NULL DEFAULT '',
-	TaskDescription VARCHAR NOT NULL DEFAULT ''
+	TaskDescription VARCHAR NOT NULL DEFAULT '',
+	TaskComplete BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 -- checklist items within a task
 CREATE TABLE IF NOT EXISTS subtasks (
 	SubtaskID SERIAL PRIMARY KEY,
 	TaskID INT,
-	SubtaskDescription VARCHAR NOT NULL DEFAULT ''
+	SubtaskDescription VARCHAR NOT NULL DEFAULT '',
+	SubtaskComplete BOOLEAN NOT NULL DEFAULT FALSE
 );
