@@ -17,6 +17,7 @@
 import psycopg2
 import yaml
 import sys
+import types
 
 
 state = {
@@ -51,17 +52,33 @@ print config
 cur = conn.cursor()
 
 
+def task_new():
+	task = raw_input("task: ")
+	cur.execute("INSERT INTO tasks (TaskTitle) VALUES (%s)",(task,))
+	conn.commit()
+
+
+def task_view():
+	cur.execute("SELECT * FROM tasks")
+	print cur.fetchall()
+
+mappings = {
+	"n": task_new,
+	"N": task_new,
+	"p": task_view,
+	"P": task_view,
+	"x": "exit",
+	"X": "exit"
+}
+
 while True:
 	action = raw_input("what now? [p=print,n=new,x=exit] ")
 	
-	if action == "n":
-		task = raw_input("task: ")
-		cur.execute("INSERT INTO tasks (TaskTitle) VALUES (%s)",(task,))
-		conn.commit()
-	elif action == "p":
-		cur.execute("SELECT * FROM tasks")
-		print cur.fetchall()
-	elif action == "x":
+	if action == "":
+		continue
+	elif mappings[action] == "exit":
 		break
+	elif isinstance(mappings[action], types.FunctionType):
+		mappings[action]()
 
 shutdown()
