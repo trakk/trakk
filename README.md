@@ -7,8 +7,8 @@ Simple cli tasklist with recurrence, checklists, and stats.
 
 Install dependencies `sudo apt-get install python-psycopg2 python-yaml`
 
-Create database and add credentials to `config.yaml` (see `config.example.yaml` 
-for reference).
+Create database (`db-setup.sql` and tables `table-setup.sql`), then add
+credentials to `config.yaml` (see `config.example.yaml` for reference).
 
 `./run` or `python trakk.py`
 

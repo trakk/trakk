@@ -37,10 +37,11 @@ except yaml.YAMLError, e:
 
 
 try:
-	conn = psycopg2.connect("dbname=%s user=%s password=%s port=%s" % (
+	conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s port=%s" % (
 		config["dbname"],
 		config["user"],
 		config["password"],
+		config["host"],
 		config["port"]))
 	state["connected"] = True
 except psycopg2.Error, e:
