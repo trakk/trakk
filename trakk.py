@@ -37,11 +37,10 @@ except yaml.YAMLError, e:
 
 
 try:
-	conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s port=%s" % (
+	conn = psycopg2.connect("dbname=%s user=%s password=%s port=%s" % (
 		config["dbname"],
 		config["user"],
 		config["password"],
-		config["host"],
 		config["port"]))
 	state["connected"] = True
 except psycopg2.Error, e:
@@ -53,6 +52,12 @@ print config
 cur = conn.cursor()
 
 
+def task_done():
+	tid = raw_input("complete task #: ")
+	cur.execute("UPDATE tasks SET TaskComplete = TRUE WHERE TaskID = %s",(tid,))
+	conn.commit()
+
+
 def task_new():
 	task = raw_input("task: ")
 	cur.execute("INSERT INTO tasks (TaskTitle) VALUES (%s)",(task,))
@@ -60,10 +65,12 @@ def task_new():
 
 
 def task_view():
-	cur.execute("SELECT * FROM tasks")
+	cur.execute("SELECT * FROM tasks WHERE NOT TaskComplete")
 	print cur.fetchall()
 
 mappings = {
+	"d": task_done,
+	"D": task_done,
 	"n": task_new,
 	"N": task_new,
 	"p": task_view,
@@ -73,7 +80,7 @@ mappings = {
 }
 
 while True:
-	action = raw_input("what now? [p=print,n=new,x=exit] ")
+	action = raw_input("what now? [d=done,p=print,n=new,x=exit] ")
 	
 	if action == "":
 		continue
