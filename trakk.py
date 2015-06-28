@@ -37,10 +37,11 @@ except yaml.YAMLError, e:
 
 
 try:
-	conn = psycopg2.connect("dbname=%s user=%s password=%s port=%s" % (
+	conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s port=%s" % (
 		config["dbname"],
 		config["user"],
 		config["password"],
+		config["host"],
 		config["port"]))
 	state["connected"] = True
 except psycopg2.Error, e:
@@ -66,7 +67,9 @@ def task_new():
 
 def task_view():
 	cur.execute("SELECT * FROM tasks WHERE NOT TaskComplete")
-	print cur.fetchall()
+	for row in cur:
+		print "{0}: {1} {2}".format(row[0],row[1],row[2])
+	
 
 mappings = {
 	"d": task_done,
@@ -82,7 +85,7 @@ mappings = {
 while True:
 	action = raw_input("what now? [d=done,p=print,n=new,x=exit] ")
 	
-	if action == "":
+	if action == "" or not action in mappings:
 		continue
 	elif mappings[action] == "exit":
 		break
