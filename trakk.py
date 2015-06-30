@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import psycopg2
+import psycopg2.extras
 import yaml
 import sys
 import types
@@ -50,10 +51,11 @@ except psycopg2.Error, e:
 
 print config
 
-cur = conn.cursor()
+cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 
 def task_done():
+	task_view()
 	tid = raw_input("complete task #: ")
 	cur.execute("UPDATE tasks SET TaskComplete = TRUE WHERE TaskID = %s",(tid,))
 	conn.commit()
@@ -68,7 +70,7 @@ def task_new():
 def task_view():
 	cur.execute("SELECT * FROM tasks WHERE NOT TaskComplete")
 	for row in cur:
-		print "{0}: {1} {2}".format(row[0],row[1],row[2])
+		print "{0}: {1} {2}".format(row["taskid"],row["tasktitle"],row["taskdescription"])
 	
 
 mappings = {
