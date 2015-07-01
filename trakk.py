@@ -22,13 +22,16 @@ import types
 
 
 state = {
-	"connected": True
+	"connected": False
 }
 def shutdown(code=0):
 	if state["connected"]:
-		cur.close()
+		if cur: cur.close()
 		conn.close()
 	sys.exit(code)
+
+conn = None
+cur = None
 
 try:
 	config = yaml.load(file("config.yaml","r"))
@@ -45,11 +48,9 @@ try:
 		config["host"],
 		config["port"]))
 	state["connected"] = True
-except psycopg2.Error, e:
+except Exception, e:
 	print "Connection error:", e
 	shutdown(2)
-
-print config
 
 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
