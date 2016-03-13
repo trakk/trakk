@@ -35,7 +35,7 @@ cur = None
 
 try:
 	config = yaml.load(file("config.yaml","r"))
-except yaml.YAMLError, e:
+except Exception, e:
 	print "config.yaml error:", e
 	shutdown(1)
 
@@ -58,6 +58,9 @@ cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 def task_done():
 	task_view()
 	tid = raw_input("complete task #: ")
+	if tid == "": return
+	tid = int(tid)
+	if not tid > 0: return
 	cur.execute("UPDATE tasks SET TaskStatus = 'Closed' WHERE TaskID = %s",(tid,))
 	conn.commit()
 
@@ -75,8 +78,8 @@ def task_view():
 	
 
 mappings = {
-	"d": task_done,
-	"D": task_done,
+	"f": task_done,
+	"F": task_done,
 	"n": task_new,
 	"N": task_new,
 	"p": task_view,
@@ -86,7 +89,7 @@ mappings = {
 }
 
 while True:
-	action = raw_input("what now? [d=done,p=print,n=new,x=exit] ")
+	action = raw_input("what now? [f=finish,p=print,n=new,x=exit] ")
 	
 	if action == "" or not action in mappings:
 		continue
