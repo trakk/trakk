@@ -15,7 +15,7 @@ credentials to `config.yaml` (see `config.example.yaml` for reference).
 
 # license
 
-Copyright (C) 2014 - 2015  David Ulrich
+Copyright (C) 2014 - 2016  David Ulrich
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
