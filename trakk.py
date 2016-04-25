@@ -20,6 +20,34 @@ import yaml
 import sys
 import types
 
+# http://code.activestate.com/recipes/134892-getch-like-unbuffered-character-reading-from-stdin/
+import sys, tty, termios
+def getch():
+	fd = sys.stdin.fileno()
+	old_settings = termios.tcgetattr(fd)
+	try:
+		tty.setraw(sys.stdin.fileno())
+		ch = sys.stdin.read(1)
+	finally:
+		termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+	return ch
+
+def trakk_input(msg=""):
+	out = ""
+	
+	sys.stdout.write(msg)
+	
+	while True:
+		ch = getch()
+		
+		if ord(ch) == 27 or ord(ch) == 13:
+			break
+		else:
+			out = out + ch
+			sys.stdout.write(ch)
+	
+	sys.stdout.write("\n")
+	return out
 
 state = {
 	"connected": False
@@ -57,7 +85,7 @@ cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 def task_done():
 	task_view()
-	tid = raw_input("complete task #: ")
+	tid = trakk_input("complete task #: ")
 	if tid == "": return
 	tid = int(tid)
 	if not tid > 0: return
@@ -66,7 +94,8 @@ def task_done():
 
 
 def task_new():
-	task = raw_input("task: ")
+	task = trakk_input("task: ")
+	if task == "": return
 	cur.execute("INSERT INTO tasks (TaskTitle) VALUES (%s)",(task,))
 	conn.commit()
 
@@ -89,7 +118,9 @@ mappings = {
 }
 
 while True:
-	action = raw_input("what now? [f=finish,p=print,n=new,x=exit] ")
+	action = trakk_input("what now? [f=finish,p=print,n=new,x=exit] ")
+	
+	action = action.strip()
 	
 	if action == "" or not action in mappings:
 		continue
