@@ -1,2 +1,4 @@
-config.*
-!config.example.yaml
+.env
+!env.example
+venv/*
+**/__pycache__/*

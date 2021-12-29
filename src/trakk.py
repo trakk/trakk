@@ -1,5 +1,5 @@
 # trakk: simple cli tasklist with recurrence, checklists, and stats
-# Copyright (C) 2014 - 2016  David Ulrich
+# Copyright (C) 2014 - 2016, 2021  David Ulrich
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published
@@ -19,6 +19,12 @@ import psycopg2.extras
 import yaml
 import sys
 import types
+
+from lib.Config import Config
+from lib.Db import Db
+
+config = Config()
+db = Db(config.db)
 
 # http://code.activestate.com/recipes/134892-getch-like-unbuffered-character-reading-from-stdin/
 import sys, tty, termios

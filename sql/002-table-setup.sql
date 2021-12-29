@@ -1,5 +1,5 @@
 -- trakk: simple cli tasklist with recurrence, checklists, and stats
--- Copyright (C) 2015 - 2016  David Ulrich
+-- Copyright (C) 2015 - 2016, 2021  David Ulrich
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU Affero General Public License as published
@@ -15,21 +15,31 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-CREATE TYPE TrakkStatus AS ENUM ('Open','Closed','Archived');
+CREATE TABLE IF NOT EXISTS categories (
+	category_id UUID NOT NULL PRIMARY KEY DEFAULT uuid_generate_v1(),
+	category_slug TEXT NOT NULL DEFAULT '',
+	category_title TEXT NOT NULL DEFAULT ''
+);
+
+
+CREATE TYPE TrakkStatus AS ENUM ('open','closed','archived');
 
 -- run as user `trakk`
 -- individual todo tasks
+DROP TABLE IF EXISTS tasks;
 CREATE TABLE IF NOT EXISTS tasks (
-	TaskID SERIAL PRIMARY KEY,
-	TaskTitle VARCHAR NOT NULL DEFAULT '',
-	TaskDescription VARCHAR NOT NULL DEFAULT '',
-	TaskStatus TrakkStatus NOT NULL DEFAULT 'Open'
+	task_id UUID NOT NULL PRIMARY KEY DEFAULT uuid_generate_v1(),
+	task_title TEXT NOT NULL DEFAULT '',
+	task_description TEXT NOT NULL DEFAULT '',
+	task_status TrakkStatus NOT NULL DEFAULT 'open',
+	category_id UUID
 );
 
 -- checklist items within a task
+DROP TABLE IF EXISTS subtasks;
 CREATE TABLE IF NOT EXISTS subtasks (
-	SubtaskID SERIAL PRIMARY KEY,
-	TaskID INT,
-	SubtaskDescription VARCHAR NOT NULL DEFAULT '',
-	SubtaskStatus TrakkStatus NOT NULL DEFAULT 'Open'
+	subtask_id UUID NOT NULL PRIMARY KEY DEFAULT uuid_generate_v1(),
+	task_id UUID,
+	subtask_description TEXT NOT NULL DEFAULT '',
+	subtask_status TrakkStatus NOT NULL DEFAULT 'open'
 );

@@ -17,3 +17,6 @@
 -- create user and database, run as db admin
 CREATE USER trakk WITH ENCRYPTED PASSWORD 'pass';
 CREATE DATABASE trakk WITH OWNER = trakk;
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
