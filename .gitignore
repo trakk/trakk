@@ -1,4 +1,5 @@
 .env
 !env.example
+.pyhistory
 venv/*
 **/__pycache__/*

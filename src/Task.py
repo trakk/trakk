@@ -14,10 +14,18 @@ class Task():
 		self.merge(data)
 
 
+	def __repr__(self):
+		return f"{self.task_title} [{self.task_id}]"
+
+
+	def __str__(self):
+		return f"{self.task_title}"
+
+
 	def merge(self, data=None):
 		if data is None:
 			data = {}
-		for field, default, *_type in Task._defs:
+		for field, default, *_type in type(self)._defs:
 			if _type:
 				value = _type[0](data[field]) if field in data else default
 			else:
@@ -27,12 +35,20 @@ class Task():
 
 	def asdict(self):
 		d = {}
-		for field in Task._attr:
+		for field in type(self)._attr:
 			value = getattr(self, field)
 			if hasattr(value, "asdict") and callable(value.asdict):
 				value = value.asdict()
 			d[field] = value
 		return d
+
+
+	def delete(self, db):
+		q = """
+			DELETE FROM tasks WHERE task_id = %s
+		"""
+		ps = (self.task_id,)
+		db.do(q, ps)
 
 
 	def fetch(self, db):
@@ -48,11 +64,33 @@ class Task():
 		self.merge(row)
 
 
-	@staticmethod
-	def fetch_by_id(task_id, db):
-		t = Task(dict(task_id=task_id))
+	@classmethod
+	def fetch_by_id(class_obj, task_id, db):
+		t = class_obj(dict(task_id=task_id))
 		t.fetch(db)
 		return t
+	
+	
+	@classmethod
+	def fetch_by_opt(class_obj, db, **kwargs):
+		opt = {**kwargs}
+		
+		ps = []
+		where_category = ""
+		if "category" in opt and opt["category"] is not None:
+			ps.append(opt["category"].category_id)
+			where_category = "AND t.category_id = %s"
+		q = """
+			SELECT
+				*
+			FROM tasks t
+			WHERE 1=1
+				AND t.task_status = 'open'
+				{}
+		""".format(where_category)
+		rows = db.find(q, ps)
+		tasks = [class_obj(t) for t in rows]
+		return tasks
 
 
 	def insert(self, db):

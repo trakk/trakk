@@ -12,12 +12,5 @@ cd "$here"
 source ../venv/bin/activate
 source ../.env
 
-
-what="$1"
-
-if [ "$what" == "debug" ]; then
-	PYTHONSTARTUP="startup.py" python
-else
-	python trakk.py
-fi
+PYTHONSTARTUP="startup.py" python
 

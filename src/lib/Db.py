@@ -36,6 +36,7 @@ class Db:
 			try:
 				self.cur.execute(query, params)
 				self.conn.commit()
+				break
 			except psycopg2.OperationalError as e:
 				print(f"Query attempt #{i}/{num_tries} failed")
 				errors.append(e)
@@ -54,6 +55,7 @@ class Db:
 				self.cur.execute(query, params)
 				rows = self.cur.fetchall()
 				self.conn.commit()
+				break
 			except psycopg2.OperationalError as e:
 				print(f"Query attempt #{i}/{num_tries} failed")
 				errors.append(e)
@@ -73,6 +75,7 @@ class Db:
 				self.cur.execute(query, params)
 				row = self.cur.fetchone()
 				self.conn.commit()
+				break
 			except psycopg2.OperationalError as e:
 				print(f"Query attempt #{i}/{num_tries} failed")
 				errors.append(e)
