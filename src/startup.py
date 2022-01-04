@@ -56,22 +56,27 @@ db = Db(config.db)
 
 category = None
 categories = []
-tasks = []
+all_categories = {}
+all_tasks = {}
 
-def latest_tasks():
+
+def load_tasks():
+	global all_tasks
 	global category
-	global tasks
 	
+	category = Category(dict(category_id=None, category_slug="none"))
+	all_tasks = { None: [] }
 	opt = {}
-	if category is not None:
-		opt["category"] = category
-	tasks = Task.fetch_by_opt(db, **opt)
-	return tasks
+	ts = Task.fetch_by_opt(db, **opt)
+	for t in ts:
+		if not t.category_id in all_tasks:
+			all_tasks[t.category_id] = []
+		all_tasks[t.category_id].append(t)
 
 
 def new(item_type="Task", **kwargs):
+	global all_tasks
 	global categories
-	global tasks
 	
 	if item_type == Category.__name__:
 		print("Creating category")
@@ -85,8 +90,7 @@ def new(item_type="Task", **kwargs):
 			opt["category_id"] = category.category_id
 		t = Task(opt)
 		t.insert(db)
-		if category is None or t.category_id == category.category_id:
-			tasks.append(t)
+		all_tasks[t.category_id].append(t)
 
 
 def new_cat(slug, title):
@@ -100,42 +104,75 @@ def new_task(title):
 
 
 def close(item, item_type=""):
-	global tasks
-	
 	if item_type == "":
 		item_type = type(item).__name__
 	
 	if item_type == Task.__name__:
-		item.task_status = 'closed'
-		item.update(db)
-		tasks = list(filter(lambda t: t.task_id != item.task_id, tasks))
-		return tasks
+		close_task(item)
+		tasks()
+	elif item_type == 'int':
+		task = all_tasks[category.category_id][item-1]
+		close_task(task)
+		tasks()
+
+
+def close_task(task):
+	global all_tasks
+	
+	task.task_status = 'closed'
+	task.update(db)
+	all_tasks[task.category_id] = list(filter(lambda t: t.task_id != task.task_id, all_tasks[task.category_id]))
+
+
+def cats():
+    global all_tasks
+    global categories
+    global all_categories
+
+    all_categories[None] = Category(dict(category_id=None, category_slug="none"))
+    for c in categories:
+        all_categories[c.category_id] = c
+    for cid in all_tasks.keys():
+        all_categories[cid].tasks = all_tasks[cid]
+    for cid in all_categories.keys():
+        c = all_categories[cid]
+        print(f"{c.category_slug.ljust(12, ' ')} [{len(c.tasks)}]: {c.category_title}")
+
+
+def tasks():
+	global all_tasks
+	global category
+	
+	if not category.category_id in all_tasks:
+		all_tasks[category.category_id] = []
+	
+	for i, task in enumerate(all_tasks[category.category_id]):
+		 print(f"{i+1}: {task.task_title} [{task.task_id}]")
 
 
 def use(item):
 	global category
-	global tasks
 	
 	item_type = type(item).__name__
 	if item_type == Category.__name__:
 		category = item
-		tasks = Task.fetch_by_opt(db, category=category)
+		sys.ps1 = category.category_slug + ">"
 		pp(category)
-		return tasks
+		tasks()
 	elif item_type == 'str':
 		cs = list(filter(lambda c: c.category_slug == item, categories))
 		if len(cs) == 1:
 			category = cs[0]
-			tasks = Task.fetch_by_opt(db, category=category)
+			sys.ps1 = category.category_slug + ">"
 			pp(category)
-			return tasks
+			tasks()
 		else:
 			print(f"unknown category: {item}")
 
 
 # preload some data
 categories = Category.fetch_by_opt(db)
-latest_tasks()
+load_tasks()
 
 
 

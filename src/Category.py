@@ -2,7 +2,8 @@ class Category():
 	_defs = [
 		("category_id", ""),
 		("category_slug", ""),
-		("category_title", "")
+		("category_title", ""),
+		("tasks", [])
 	]
 	_attr = [d[0] for d in _defs]
 
